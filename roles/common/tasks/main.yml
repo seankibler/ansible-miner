@@ -1,0 +1,21 @@
+---
+# tasks file for common
+
+- name: Common packages
+  apt:
+    name: "{{ packages }}"
+    update_cache: yes
+
+- name: GRUB terminal mode
+  replace:
+    path: /etc/default/grub
+    regexp: "^#GRUB_TERMINAL=console"
+    replace: "GRUB_TERMINAL=console"
+    backup: yes
+
+- name: Disable lightdm startup
+  systemd:
+    enabled: no
+    state: stopped
+    name: lightdm
+

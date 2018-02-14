@@ -1,0 +1,11 @@
+---
+# vars file for xmr-stak
+
+packages:
+  - build-essential
+  - libmicrohttpd-dev
+  - libssl-dev
+  - cmake
+  - libhwloc-dev
+  - git
+  - cuda-8-0

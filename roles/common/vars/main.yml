@@ -1,0 +1,11 @@
+---
+# vars file for common
+
+packages:
+  - htop
+  - lm-sensors
+  - nginx
+  - php-fpm
+  - vim
+  - tmux
+  - slurm
