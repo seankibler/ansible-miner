@@ -16,43 +16,53 @@
 
 - name: Download
   git:
-    dest: /srv/xmr-stak
+    dest: /usr/local/src/xmr-stak
     repo: https://github.com/fireice-uk/xmr-stak.git
     update: no
 
 - name: Adjust donation
   replace:
-    path: /srv/xmr-stak/xmrstak/donate-level.hpp
+    path: /usr/local/src/xmr-stak/xmrstak/donate-level.hpp
     regexp: "2.0 / 100.0"
     replace: "0.0"
 
 - name: Create build dir
-  file: state=directory path=/srv/xmr-stak/build
-
-- name: Setup install location
-  file: state=directory path=/home/skibler/bin owner=skibler group=skibler
+  file: state=directory path=/usr/local/src/xmr-stak/build
 
 - name: Compile
-  shell: "cmake {{ cmake_args|quote }} ../ && make install"
+  shell: "cmake {{ cmake_args }} ../ && make install"
   args:
-    creates: "/srv/xmr-stak/build/install_manifest.txt"
-    chdir: /srv/xmr-stak/build
+    creates: "/usr/local/src/xmr-stak/build/install_manifest.txt"
+    chdir: /usr/local/src/xmr-stak/build
   notify:
-    - install xmr-stak
+    - cleanup xmr-stak install
 
 - name: Install control scripts
   copy:
     src: files/bin/
-    dest: /home/skibler/bin/
+    dest: /usr/local/bin
+    owner: root
+    group: adm
 
-- name: Fix scripts perms
+- name: Create config dirs
   file:
     state: directory
-    recurse: yes
-    mode: 0750
-    owner: skibler
-    group: skibler
-    path: /home/skibler/bin
+    path: "/usr/local/etc/xmr-stak/{{ item }}"
+    owner: root
+    group: adm
+    mode: 0770
+  with_items: "{{ currencies }}"
+
+- name: Install configs
+  template:
+    src: "files/configs/{{ item }}/config.txt.j2"
+    dest: "/usr/local/etc/xmr-stak/{{ item }}/config.txt"
+    owner: root
+    group: adm
+    mode: 0640
+  with_items: "{{ currencies }}"
+  tags:
+    - xmr-stak-config
 
 - name: Reduce swappiness
   sysctl:
@@ -73,3 +83,4 @@
     src: files/limits.conf
     dest: /etc/security/limits.conf
     backup: yes
+

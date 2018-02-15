@@ -48,6 +48,11 @@
 - name: Miner web monitor files
   copy:
     dest: /var/www/html
-    src: files/nginx/html/
+    src: files/html/
   tags:
     - web
+
+- name: Tmux config
+  copy:
+    src: files/.tmux.conf
+    dest: /home/skibler/.tmux.conf

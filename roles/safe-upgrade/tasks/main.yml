@@ -1,0 +1,8 @@
+---
+# tasks file for safe-upgrade
+
+- name: aptitude safe-upgrade
+  apt: upgrade=safe update_cache=true
+  notify:
+    - restart system
+

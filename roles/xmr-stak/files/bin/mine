@@ -11,7 +11,7 @@ fi
 
 shift
 
-CONFIG_DIR=$HOME/xmr-stak-configs/$CURRENCY
+CONFIG_DIR=/usr/local/etc/xmr-stak/$CURRENCY
 
 echo $CURRENCY | grep -E $VALID_CURRENCIES > /dev/null
 
@@ -22,7 +22,7 @@ fi
 
 echo "Begin mining: $CURRENCY"
 
-$HOME/bin/xmr-stak --cpu $CONFIG_DIR/cpu.txt \
+xmr-stak --cpu $CONFIG_DIR/cpu.txt \
   --nvidia $CONFIG_DIR/nvidia.txt \
   --noAMD \
   --config $CONFIG_DIR/config.txt \

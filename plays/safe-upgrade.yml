@@ -1,0 +1,5 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - { role: safe-upgrade, allow_restart: true, wait_for_restart: true }

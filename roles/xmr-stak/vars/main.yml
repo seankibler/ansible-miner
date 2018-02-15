@@ -9,5 +9,26 @@ packages:
   - libhwloc-dev
   - git
   - cuda-8-0
-cmake_args: "-DOpenCL_ENABLE=OFF"
-
+cmake_args: "-DOpenCL_ENABLE=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCUDA_ARCH=21"
+currencies:
+  - aeon
+  - electroneum
+  - intensecoin
+  - monero
+xmrstak:
+  aeon:
+    pool: "{{ xmrstak_vault.aeon.pool }}"
+    wallet: "{{ xmrstak_vault.aeon.wallet }}"
+    password: "{{ xmrstak_vault.aeon.password }}"
+  electroneum:
+    pool: "{{ xmrstak_vault.electroneum.pool }}"
+    wallet: "{{ xmrstak_vault.electroneum.wallet }}"
+    password: "{{ xmrstak_vault.electroneum.password }}"
+  intensecoin:
+    pool: "{{ xmrstak_vault.intensecoin.pool }}"
+    wallet: "{{ xmrstak_vault.intensecoin.wallet }}"
+    password: "{{ xmrstak_vault.intensecoin.password }}"
+  monero:
+    pool: "{{ xmrstak_vault.monero.pool }}"
+    wallet: "{{ xmrstak_vault.monero.wallet }}"
+    password: "{{ xmrstak_vault.monero.password }}"

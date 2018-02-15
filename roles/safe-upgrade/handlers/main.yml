@@ -1,0 +1,6 @@
+---
+# handlers file for safe-upgrade
+
+- name: restart system
+  command: reboot
+  async: 0
