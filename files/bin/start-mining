@@ -1,9 +1,14 @@
 #! /bin/bash
 
+if [ $# -eq 0 ]; then
+  echo "Crypto currency required." 2>&1
+  exit 1
+fi
+
 ps aux | grep xmr-stak | grep -v grep > /dev/null
 
 if [ $? -ne 0 ]; then
-	mine aeon &
+	mine $@ &
 else
 	echo "miner already running"
 fi
