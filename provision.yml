@@ -4,3 +4,4 @@
   roles:
     - xmr-stak
     - common
+    - arbiter

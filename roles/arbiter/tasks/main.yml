@@ -1,0 +1,14 @@
+---
+# tasks file for arbiter
+
+- name: Install script
+  copy: src=files/bin/arbiter dest=/usr/local/bin/arbiter mode=0750
+  tags:
+    - cron
+
+- name: Install crontab
+  cron:
+    name: "arbiter"
+    job: "/usr/local/bin/arbiter >> /var/log/arbiter.log"
+  tags:
+    - cron

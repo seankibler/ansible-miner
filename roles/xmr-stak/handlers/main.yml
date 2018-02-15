@@ -1,2 +1,5 @@
 ---
 # handlers file for xmr-stak
+
+- name: install xmr-stak
+  shell: "rsync -r --exclude=*.a /srv/xmr-stak/build/bin/ /home/skibler/bin && chown skibler:skibler /home/skibler/bin/* && chmod 750 /home/skibler/bin/*"

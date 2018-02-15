@@ -13,3 +13,63 @@
   apt:
     name: "{{ packages }}"
     update_cache: yes
+
+- name: Download
+  git:
+    dest: /srv/xmr-stak
+    repo: https://github.com/fireice-uk/xmr-stak.git
+    update: no
+
+- name: Adjust donation
+  replace:
+    path: /srv/xmr-stak/xmrstak/donate-level.hpp
+    regexp: "2.0 / 100.0"
+    replace: "0.0"
+
+- name: Create build dir
+  file: state=directory path=/srv/xmr-stak/build
+
+- name: Setup install location
+  file: state=directory path=/home/skibler/bin owner=skibler group=skibler
+
+- name: Compile
+  shell: "cmake {{ cmake_args|quote }} ../ && make install"
+  args:
+    creates: "/srv/xmr-stak/build/install_manifest.txt"
+    chdir: /srv/xmr-stak/build
+  notify:
+    - install xmr-stak
+
+- name: Install control scripts
+  copy:
+    src: files/bin/
+    dest: /home/skibler/bin/
+
+- name: Fix scripts perms
+  file:
+    state: directory
+    recurse: yes
+    mode: 0750
+    owner: skibler
+    group: skibler
+    path: /home/skibler/bin
+
+- name: Reduce swappiness
+  sysctl:
+    name: vm.swappiness
+    value: 5
+    state: present
+    reload: yes
+
+- name: Set hugepages
+  sysctl:
+    name: vm.nr_hugepages
+    value: 128
+    state: present
+    reload: yes
+
+- name: Set ulimits
+  copy:
+    src: files/limits.conf
+    dest: /etc/security/limits.conf
+    backup: yes

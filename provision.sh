@@ -2,4 +2,4 @@
 
 ansible-playbook --ask-sudo-pass \
   -i hosts \
-  playbook.yml $@
+  provision.yml $@

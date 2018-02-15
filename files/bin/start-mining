@@ -1,0 +1,11 @@
+#! /bin/bash
+
+ps aux | grep xmr-stak | grep -v grep > /dev/null
+
+if [ $? -ne 0 ]; then
+	mine aeon &
+else
+	echo "miner already running"
+fi
+
+exit 0

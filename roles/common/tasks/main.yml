@@ -12,10 +12,42 @@
     regexp: "^#GRUB_TERMINAL=console"
     replace: "GRUB_TERMINAL=console"
     backup: yes
+  notify:
+    - update grub
 
 - name: Disable lightdm startup
   systemd:
     enabled: no
-    state: stopped
     name: lightdm
 
+- name: Enable multi-user
+  systemd:
+    enabled: yes
+    name: multi-user.target
+    daemon_reload: yes
+
+- name: Default multi-user
+  file:
+    state: link
+    src: /lib/systemd/system/multi-user.target
+    path: /etc/systemd/system/default.target
+
+- name: Configure sensors
+  command: "sensors-detect --auto"
+  args:
+    creates: /etc/sensors3.conf
+
+- name: Nginx php-fpm default config
+  copy:
+    backup: yes
+    dest: /etc/nginx/sites-available/default
+    src: files/nginx/default
+  notify:
+    - restart nginx
+
+- name: Miner web monitor files
+  copy:
+    dest: /var/www/html
+    src: files/nginx/html/
+  tags:
+    - web
