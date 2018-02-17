@@ -84,3 +84,8 @@
     dest: /etc/security/limits.conf
     backup: yes
 
+- name: Miner Cron
+  cron:
+    name: xmr-stak miner
+    minute: "*/15"
+    job: "/usr/local/bin/start-mining aeon"

@@ -22,7 +22,7 @@ fi
 
 echo "Begin mining: $CURRENCY"
 
-xmr-stak --cpu $CONFIG_DIR/cpu.txt \
+cd /usr/local/bin && xmr-stak --cpu $CONFIG_DIR/cpu.txt \
   --nvidia $CONFIG_DIR/nvidia.txt \
   --noAMD \
   --config $CONFIG_DIR/config.txt \
