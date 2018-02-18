@@ -1,10 +1,60 @@
 ---
 # tasks file for arbiter
 
+- name: Add datadog repo
+  apt_repository:
+    repo: deb https://apt.datadoghq.com/ stable main
+    state: present
+
+- name: Add datadog apt key
+  apt_key:
+    id: C7A7DA52
+    keyserver: hkp://keyserver.ubuntu.com:80
+
+- name: Install datadog
+  apt:
+    name: datadog-agent
+    state: present
+    update_cache: yes
+  tags:
+    - apt
+
+- name: Configure datadog
+  shell: "sed 's/api_key:.*/api_key: {{ datadog.api_key }}/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
+  args:
+    creates: /etc/dd-agent/datadog.conf
+
+- name: Install python package management
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - python-pip
+    - python-virtualenv
+  tags:
+    - apt
+
+- name: Install datadog python lib
+  pip:
+    name: datadog
+
+- name: Start datadog
+  systemd:
+    name: datadog-agent
+    state: started
+    enabled: yes
+
 - name: Install script
   copy: src=files/bin/arbiter dest=/usr/local/bin/arbiter mode=0750
   tags:
     - cron
+
+- name: Set datadog cron vars
+  cronvar:
+    name: "{{ item.var }}"
+    value: "{{ item.value }}"
+  with_items:
+    - { var: "DATADOG_API_KEY", value: "{{ datadog.api_key }}" }
 
 - name: Install crontab
   cron:

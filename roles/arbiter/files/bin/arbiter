@@ -1,39 +1,52 @@
-#! /usr/bin/env php
+#! /usr/bin/env python
 
-<?php
+import httplib
+import json
+import subprocess
+import logging
+import sys
+import os
+from datadog import initialize, statsd
 
-const CRIT_CPU_TEMP = 74;
-const CRIT_GPU_TEMP = 85;
+CRIT_CPU_TEMP = 74
+CRIT_GPU_TEMP = 85
 
-$temps = json_decode(file_get_contents("http://localhost/temperatures.php"));
-$cpu_cores = $temps->cpu->cores;
-$gpus = $temps->gpu;
+initialize({ 'api_key': os.getenv('DATADOG_API_KEY') })
 
-function stop_mining() {
-	system("killall xmr-stak");
+logger = logging.getLogger("arbiter")
+logger.setLevel(logging.INFO)
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
-	exit(0);
-}
+conn = httplib.HTTPConnection("localhost")
+conn.request("GET", "/temperatures.php")
+resp = conn.getresponse()
 
+temps = json.loads(resp.read())
+cpu_cores = temps["cpu"]["cores"]
+gpus = temps["gpu"]
 
-echo date('Y-m-d H:i:s') . ": ";
+def stop_mining():
+    subprocess.call(["killall", "xmr-stak"])
 
-for($t=0; $t < count($cpu_cores); $t++) {
-	if ($cpu_cores[$t] >= CRIT_CPU_TEMP) {
-		echo "CPU Core " . $t . " violates max temp at " . $cpu_cores[$t] . "C, shutting down mining!";
-		stop_mining();
-	}
-}
+    sys.exit(0)
 
-echo "CPU pass...";
+for core, temp in cpu_cores.items():
+    statsd.gauge("temps.cpu.{0}".format(core), float(temp))
 
-for($t=0; $t < count($gpus); $t++) {
-	if ($gpus[$t] >= CRIT_GPU_TEMP) {
-		echo "GPU " . $t . " violates max temp at " . $gpus[$t] . "C, shutting down mining!";
-		stop_mining();
-	}
-}
+    if float(core) >= CRIT_CPU_TEMP:
+        logger.info("CPU Core %s violates max temp at %sC >= %sC, shutting down mining!",
+				core, temp, CRIT_CPU_TEMP)
+        stop_mining()
 
-echo "GPU pass...";
+for gpu, temp in gpus.items():
+    statsd.gauge("temps.gpu.{0}".format(gpu), int(temp))
+    if float(gpu) >= CRIT_GPU_TEMP:
+        logger.info("GPU %s violates max temp at %sC >= %sC, shutting down mining!",
+				gpu, temp, CRIT_GPU_TEMP)
+        stop_mining()
 
-exit(0);
+sys.exit(0)
