@@ -64,6 +64,14 @@
   tags:
     - xmr-stak-config
 
+- name: Create logs dir
+  file:
+    path: "{{ log_dir }}"
+    state: directory
+    owner: root
+    group: adm
+    mode: 0770
+
 - name: Reduce swappiness
   sysctl:
     name: vm.swappiness

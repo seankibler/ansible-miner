@@ -16,6 +16,7 @@ currencies:
   - intensecoin
   - monero
   - graft
+log_dir: /var/log/xmr-stak
 xmrstak:
   aeon:
     pool: "{{ xmrstak_vault.aeon.pool }}"
