@@ -15,6 +15,7 @@ currencies:
   - electroneum
   - intensecoin
   - monero
+  - graft
 xmrstak:
   aeon:
     pool: "{{ xmrstak_vault.aeon.pool }}"
@@ -32,3 +33,7 @@ xmrstak:
     pool: "{{ xmrstak_vault.monero.pool }}"
     wallet: "{{ xmrstak_vault.monero.wallet }}"
     password: "{{ xmrstak_vault.monero.password }}"
+  graft:
+    pool: "{{ xmrstak_vault.graft.pool }}"
+    wallet: "{{ xmrstak_vault.graft.wallet }}"
+    password: "{{ xmrstak_vault.graft.password }}"
