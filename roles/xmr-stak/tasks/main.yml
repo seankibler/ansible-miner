@@ -4,10 +4,14 @@
 - name: Nvidia Repo Installer
   apt:
     deb: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
+  tags:
+    - xmr-stak
 
 - name: Nvidia Repo Key
   apt_key:
     url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
+  tags:
+    - xmr-stak
 
 - name: Install dependencies
   apt:
@@ -25,9 +29,13 @@
     path: /usr/local/src/xmr-stak/xmrstak/donate-level.hpp
     regexp: "2.0 / 100.0"
     replace: "0.0"
+  tags:
+    - xmr-stak
 
 - name: Create build dir
   file: state=directory path=/usr/local/src/xmr-stak/build
+  tags:
+    - xmr-stak
 
 - name: Compile
   shell: "cmake {{ cmake_args }} ../ && make install"
@@ -36,6 +44,8 @@
     chdir: /usr/local/src/xmr-stak/build
   notify:
     - cleanup xmr-stak install
+  tags:
+    - xmr-stak
 
 - name: Install control scripts
   copy:
@@ -43,6 +53,8 @@
     dest: /usr/local/bin
     owner: root
     group: adm
+  tags:
+    - xmr-stak
 
 - name: Create config dirs
   file:
@@ -62,6 +74,7 @@
     mode: 0640
   with_items: "{{ currencies }}"
   tags:
+    - xmr-stak
     - xmr-stak-config
 
 - name: Create logs dir
@@ -71,6 +84,8 @@
     owner: root
     group: adm
     mode: 0770
+  tags:
+    - xmr-stak
 
 - name: Reduce swappiness
   sysctl:
@@ -78,6 +93,8 @@
     value: 5
     state: present
     reload: yes
+  tags:
+    - xmr-stak
 
 - name: Set hugepages
   sysctl:
@@ -85,15 +102,13 @@
     value: 128
     state: present
     reload: yes
+  tags:
+    - xmr-stak
 
 - name: Set ulimits
   copy:
     src: files/limits.conf
     dest: /etc/security/limits.conf
     backup: yes
-
-- name: Miner Cron
-  cron:
-    name: xmr-stak miner
-    minute: "*/15"
-    job: "/usr/local/bin/start-mining aeon"
+  tags:
+    - xmr-stak
