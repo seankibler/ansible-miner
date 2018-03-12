@@ -5,6 +5,9 @@
   apt:
     name: "{{ packages }}"
     update_cache: yes
+  tags:
+    - apt
+    - packages
 
 - name: GRUB terminal mode
   replace:
