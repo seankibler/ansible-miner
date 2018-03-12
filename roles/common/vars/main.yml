@@ -10,3 +10,4 @@ packages:
   - tmux
   - slurm
   - cpulimit
+  - curl
