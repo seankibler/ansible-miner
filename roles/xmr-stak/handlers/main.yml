@@ -1,10 +1,2 @@
 ---
 # handlers file for xmr-stak
-
-- name: cleanup xmr-stak install
-  file:
-    state: absent
-    path: "/usr/local/bin/{{ item }}"
-  with_items:
-    - libxmr-stak-backend.a
-    - libxmr-stak-c.a

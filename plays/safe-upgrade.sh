@@ -1,5 +1,5 @@
 #! /bin/bash
 
-ansible-playbook --ask-sudo-pass \
+ansible-playbook -bK \
   -i hosts \
   safe-upgrade.yml $@

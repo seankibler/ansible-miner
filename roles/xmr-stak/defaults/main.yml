@@ -1,2 +1,39 @@
 ---
-# defaults file for xmr-stak
+xmr_stak_src_path: /usr/local/src/xmr-stak
+xmr_stak_cmake_args: "-DOpenCL_ENABLE=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
+xmr_stak_currencies:
+  - aeon
+  - electroneum
+  - intensecoin
+  - monero
+  - graft
+xmr_stak_log_path: /var/log/xmr-stak
+xmr_stak_packages:
+  - build-essential
+  - libmicrohttpd-dev
+  - libssl-dev
+  - cmake
+  - libhwloc-dev
+  - git
+  - cuda-8-0
+xmrstak:
+  aeon:
+    pool: "{{ xmrstak_vault.aeon.pool }}"
+    wallet: "{{ xmrstak_vault.aeon.wallet }}"
+    password: "{{ xmrstak_vault.aeon.password }}"
+  electroneum:
+    pool: "{{ xmrstak_vault.electroneum.pool }}"
+    wallet: "{{ xmrstak_vault.electroneum.wallet }}"
+    password: "{{ xmrstak_vault.electroneum.password }}"
+  intensecoin:
+    pool: "{{ xmrstak_vault.intensecoin.pool }}"
+    wallet: "{{ xmrstak_vault.intensecoin.wallet }}"
+    password: "{{ xmrstak_vault.intensecoin.password }}"
+  monero:
+    pool: "{{ xmrstak_vault.monero.pool }}"
+    wallet: "{{ xmrstak_vault.monero.wallet }}"
+    password: "{{ xmrstak_vault.monero.password }}"
+  graft:
+    pool: "{{ xmrstak_vault.graft.pool }}"
+    wallet: "{{ xmrstak_vault.graft.wallet }}"
+    password: "{{ xmrstak_vault.graft.password }}"

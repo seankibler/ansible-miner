@@ -1,0 +1,6 @@
+---
+- hosts: miners
+  vars:
+    update_xmr_stak: false
+  roles:
+    - xmr-stak

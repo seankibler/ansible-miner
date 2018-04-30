@@ -15,37 +15,59 @@
 
 - name: Install dependencies
   apt:
-    name: "{{ packages }}"
+    name: "{{ xmr_stak_packages }}"
     update_cache: yes
 
 - name: Download
   git:
-    dest: /usr/local/src/xmr-stak
+    dest: "{{ xmr_stak_src_path }}"
     repo: https://github.com/fireice-uk/xmr-stak.git
-    update: no
+    update: yes
+    force: yes
 
 - name: Adjust donation
   replace:
-    path: /usr/local/src/xmr-stak/xmrstak/donate-level.hpp
+    path: "{{ xmr_stak_src_path }}/xmrstak/donate-level.hpp"
     regexp: "2.0 / 100.0"
     replace: "0.0"
   tags:
     - xmr-stak
 
+- name: Remove old build
+  file: state=absent path="{{ xmr_stak_src_path }}/build"
+  when: update_xmr_stak == true
+
 - name: Create build dir
-  file: state=directory path=/usr/local/src/xmr-stak/build
+  file: state=directory path="{{ xmr_stak_src_path }}/build"
   tags:
     - xmr-stak
 
-- name: Compile
-  shell: "cmake {{ cmake_args }} ../ && make install"
+- name: Configure
+  shell: "cmake {{ xmr_stak_cmake_args }} ../ "
   args:
-    creates: "/usr/local/src/xmr-stak/build/install_manifest.txt"
-    chdir: /usr/local/src/xmr-stak/build
-  notify:
-    - cleanup xmr-stak install
+    creates: "{{ xmr_stak_src_path }}/build/cmake_install.cmake"
+    chdir: "{{ xmr_stak_src_path }}/build"
+  register: configured
   tags:
     - xmr-stak
+
+- name: Install
+  make:
+    chdir: "{{ xmr_stak_src_path }}/build"
+    params:
+      NUM_THREADS: 4
+    target: install
+  when: configured.rc == 0
+  register: installed
+
+- name: Cleanup install
+  file:
+    state: absent
+    path: "/usr/local/bin/{{ item }}"
+  with_items:
+    - libxmr-stak-backend.a
+    - libxmr-stak-c.a
+  # when: installed.rc == 0
 
 - name: Install control scripts
   copy:
@@ -63,7 +85,7 @@
     owner: root
     group: adm
     mode: 0770
-  with_items: "{{ currencies }}"
+  with_items: "{{ xmr_stak_currencies }}"
 
 - name: Install configs
   template:
@@ -72,14 +94,14 @@
     owner: root
     group: adm
     mode: 0640
-  with_items: "{{ currencies }}"
+  with_items: "{{ xmr_stak_currencies }}"
   tags:
     - xmr-stak
     - xmr-stak-config
 
 - name: Create logs dir
   file:
-    path: "{{ log_dir }}"
+    path: "{{ xmr_stak_log_path }}"
     state: directory
     owner: root
     group: adm
