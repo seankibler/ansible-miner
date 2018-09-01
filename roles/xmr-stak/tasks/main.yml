@@ -1,18 +1,6 @@
 ---
 # tasks file for xmr-stak
 
-- name: Nvidia Repo Installer
-  apt:
-    deb: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/cuda-repo-ubuntu1604_9.1.85-1_amd64.deb
-  tags:
-    - xmr-stak
-
-- name: Nvidia Repo Key
-  apt_key:
-    url: http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub
-  tags:
-    - xmr-stak
-
 - name: Install dependencies
   apt:
     name: "{{ xmr_stak_packages }}"

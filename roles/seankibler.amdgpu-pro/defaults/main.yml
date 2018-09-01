@@ -1,0 +1,4 @@
+---
+amdgpu_version: "18.10"
+amdgpu_release: "572953"
+amdgpu_package_sha256: 59d6b1d975164ff45f6e6be5af6bcc061bf9ef6378ac5757bdb4e67840a706b0

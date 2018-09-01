@@ -1,0 +1,50 @@
+- name: Install Dependencies
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - xzdec
+    - clinfo
+
+- name: Check Drivers Source Exists
+  stat:
+    path: /usr/local/src/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}/amdgpu-pro-install
+  register: amdgpu_driver_source
+
+- name: Download Drivers Package
+  get_url:
+    url: "https://www2.ati.com/drivers/linux/ubuntu/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}.tar.xz"
+    headers: "Referer:http://support.amd.com"
+    dest: /tmp/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}.tar.xz
+    sha256sum: "{{ amdgpu_package_sha256 }}"
+  when: amdgpu_driver_source.stat.exists == false
+
+- name: Decompress Drivers Package
+  shell: "xz -d /tmp/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}.tar.xz && tar -xf /tmp/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}.tar"
+  args:
+    chdir: /usr/local/src/
+  when: amdgpu_driver_source.stat.exists == false
+
+- name: Install Drivers
+  shell: "./amdgpu-pro-install -y --headless"
+  args:
+    chdir: /usr/local/src/amdgpu-pro-{{ amdgpu_version }}-{{ amdgpu_release }}
+  when: amdgpu_driver_source.stat.exists == false
+
+- name: ROCm Repo Apt Key
+  apt_key:
+    url: http://repo.radeon.com/rocm/apt/debian/rocm.gpg.key
+
+- name: ROCm Apt Repo
+  apt_repository:
+    repo: "deb [arch=amd64] http://repo.radeon.com/rocm/apt/debian/ xenial main"
+    filename: rocm
+
+- name: Install ROCm
+  apt:
+    name: "{{ item }}"
+    update_cache: true
+  with_items:
+    - libnuma-dev
+    - rocm-dkms
+    - rocm-opencl-dev

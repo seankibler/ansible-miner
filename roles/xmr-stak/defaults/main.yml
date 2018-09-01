@@ -1,6 +1,6 @@
 ---
 xmr_stak_src_path: /usr/local/src/xmr-stak
-xmr_stak_cmake_args: "-DOpenCL_ENABLE=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
+xmr_stak_cmake_args: "-DCUDA_ENABLE=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
 xmr_stak_currencies:
   - aeon
   - electroneum
@@ -15,7 +15,6 @@ xmr_stak_packages:
   - cmake
   - libhwloc-dev
   - git
-  - cuda-8-0
 xmrstak:
   aeon:
     pool: "{{ xmrstak_vault.aeon.pool }}"

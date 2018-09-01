@@ -3,4 +3,5 @@
   vars:
     update_xmr_stak: false
   roles:
+    - seankibler.amdgpu-pro
     - xmr-stak
