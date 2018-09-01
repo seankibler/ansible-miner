@@ -2,6 +2,16 @@
 - hosts: miners
   vars:
     update_xmr_stak: false
+    monit_cycle: 300
+    monit_services:
+      - name: xmr-stak
+        type: process_by_name
+        target: xmr-stak
+        start: /usr/local/bin/start-mining monero
+        stop: /usr/local/bin/stop-mining
+        user: skibler
+        group: skibler
   roles:
     - seankibler.amdgpu-pro
     - xmr-stak
+    - pgolm.monit
