@@ -1,0 +1,24 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# Make sure that the script will "exit 0" on success or any other
+# value on error.
+#
+# In order to enable or disable this script just change the execution
+# bits.
+#
+# By default this script does nothing.
+
+if [ -x /usr/local/bin/ohgodatool ]; then
+  /usr/local/bin/ohgodatool -i 0 --show-core > /dev/null \
+    && /usr/local/bin/ohgodatool -i 0 --mem-state 2 --mem-clock 1900 \
+    && /usr/local/bin/ohgodatool -i 0 --core-state 7 --core-vddc-idx 6
+
+  /usr/local/bin/ohgodatool -i 1 --show-core > /dev/null \
+    && /usr/local/bin/ohgodatool -i 1 --mem-state 2 --mem-clock 1600 \
+    && /usr/local/bin/ohgodatool -i 1 --core-state 7 --core-vddc-idx 6
+fi
+
+exit 0

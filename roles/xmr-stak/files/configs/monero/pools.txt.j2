@@ -15,7 +15,7 @@
 
 "pool_list" :
 [
-	{"pool_address" : "{{ xmrstak.monero.pool }}", "wallet_address" : "{{ xmrstak.monero.wallet }}", "rig_id" : "", "pool_password" : "{{ xmrstak.monero.password }}", "use_nicehash" : false, "use_tls" : false, "tls_fingerprint" : "", "pool_weight" : 1 },
+	{"pool_address" : "{{ xmrstak_configs.monero.pool }}", "wallet_address" : "{{ xmrstak_configs.monero.wallet }}", "rig_id" : "", "pool_password" : "{{ xmrstak_configs.monero.password }}", "use_nicehash" : false, "use_tls" : false, "tls_fingerprint" : "", "pool_weight" : 1 },
 ],
 
 /*
@@ -45,5 +45,5 @@
  *    cryptonight_heavy
  */
 
-"currency" : "monero7",
+"currency" : "monero",
 

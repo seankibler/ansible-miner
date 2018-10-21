@@ -4,26 +4,32 @@
 - name: Install dependencies
   apt:
     name: "{{ xmr_stak_packages }}"
-    update_cache: yes
+    update_cache: no
 
 - name: Download
+  become: true
   git:
     dest: "{{ xmr_stak_src_path }}"
     repo: https://github.com/fireice-uk/xmr-stak.git
     update: yes
     force: yes
+  tags:
+    - xmr-stak
 
 - name: Adjust donation
   replace:
     path: "{{ xmr_stak_src_path }}/xmrstak/donate-level.hpp"
     regexp: "2.0 / 100.0"
     replace: "0.0"
+  when: not xmr_stak_donate
   tags:
     - xmr-stak
 
 - name: Remove old build
   file: state=absent path="{{ xmr_stak_src_path }}/build"
-  when: update_xmr_stak == true
+  when: update_xmr_stak
+  tags:
+    - xmr-stak
 
 - name: Create build dir
   file: state=directory path="{{ xmr_stak_src_path }}/build"
@@ -40,6 +46,7 @@
     - xmr-stak
 
 - name: Install
+  become: true
   make:
     chdir: "{{ xmr_stak_src_path }}/build"
     params:
@@ -47,8 +54,11 @@
     target: install
   when: configured.rc == 0
   register: installed
+  tags:
+    - xmr-stak
 
 - name: Cleanup install
+  become: true
   file:
     state: absent
     path: "/usr/local/bin/{{ item }}"
@@ -56,6 +66,8 @@
     - libxmr-stak-backend.a
     - libxmr-stak-c.a
   # when: installed.rc == 0
+  tags:
+    - xmr-stak
 
 - name: Install control scripts
   copy:
@@ -74,6 +86,8 @@
     group: adm
     mode: 0770
   with_items: "{{ xmr_stak_currencies }}"
+  tags:
+    - xmr-stak
 
 - name: Install configs
   template:
@@ -122,3 +136,40 @@
     backup: yes
   tags:
     - xmr-stak
+
+- name: Checkout amdmeminfo
+  git:
+    repo: https://github.com/ystarnaud/amdmeminfo
+    dest: /usr/local/src/amdmeminfo
+    update: no
+
+- name: Compile amdmeminfo
+  make:
+    chdir: /usr/local/src/amdmeminfo
+
+- name: Install amdmeminfo
+  copy:
+    dest: /usr/local/bin/amdmeminfo
+    src: /usr/local/src/amdmeminfo/amdmeminfo
+    force: yes
+    mode: 0755
+    owner: root
+    group: root
+    remote_src: True
+
+- name: Download ohgodatool
+  get_url:
+    url: https://github.com/OhGodACompany/OhGodATool/releases/download/1/ohgodatool
+    dest: /usr/local/bin/ohgodatool
+    owner: root
+    group: root
+    mode: 0755
+    checksum: sha256:e8eb1a2fe939cabc959011f962ffe80a78ea7ebe10c29b085947b7f372731f9b
+
+- name: Install rc.local
+  file:
+    src: rc.local
+    dest: /etc/rc.local
+    owner: root
+    group: root
+    mode: 755
