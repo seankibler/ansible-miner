@@ -9,7 +9,7 @@
       - name: xmr-stak
         type: process_by_name
         target: xmr-stak
-        start: /usr/local/bin/mine monero
+        start: /usr/local/bin/start-mining monero
         stop: /usr/local/bin/stop-mining
         user: skibler
         group: skibler
@@ -20,6 +20,53 @@
         pool: "{{ xmrstak_vault.monero.pool }}"
         wallet: "{{ xmrstak_vault.monero.wallet }}"
         password: "{{ xmrstak_vault.monero.password }}"
+  tasks:
+    - user:
+      args:
+        name: skibler
+        append: yes
+        groups: ["sudo", "adm"]
+
+    - authorized_key:
+      args:
+        user: skibler
+        key: https://github.com/seankibler.keys
+
+    - name: Passwordless sudo
+      lineinfile:
+        path: /etc/sudoers
+        backup: yes
+        line: "%sudo   ALL=(ALL) NOPASSWD:ALL"
+
+    - name: Checkout amdmeminfo
+      git:
+        repo: https://github.com/ystarnaud/amdmeminfo
+        dest: /usr/local/src/amdmeminfo
+        update: no
+
+    - name: Compile amdmeminfo
+      make:
+        chdir: /usr/local/src/amdmeminfo
+
+    - name: Install amdmeminfo
+      copy:
+        dest: /usr/local/bin/amdmeminfo
+        src: /usr/local/src/amdmeminfo/amdmeminfo
+        force: yes
+        mode: 0755
+        owner: root
+        group: root
+        remote_src: True
+
+    - name: Download ohgodatool
+      get_url:
+        url: https://github.com/OhGodACompany/OhGodATool/releases/download/1/ohgodatool
+        dest: /usr/local/bin/ohgodatool
+        owner: root
+        group: root
+        mode: 0755
+        checksum: sha256:e8eb1a2fe939cabc959011f962ffe80a78ea7ebe10c29b085947b7f372731f9b
+
   roles:
     # - seankibler.amdgpu-pro
     - xmr-stak

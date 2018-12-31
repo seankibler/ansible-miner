@@ -1,7 +1,7 @@
 #! /bin/bash
 
-DEFAULT_CURRENCY=electroneum
-VALID_CURRENCIES="(monero|electroneum|aeon|intensecoin|graft)"
+DEFAULT_CURRENCY=monero
+VALID_CURRENCIES="(monero)"
 
 if [ -n "$1" ]; then
   CURRENCY=$1
@@ -12,6 +12,7 @@ fi
 shift
 
 CONFIG_DIR=/usr/local/etc/xmr-stak/$CURRENCY
+LOG=/var/log/xmr-stak/${CURRENCY}.log
 
 echo $CURRENCY | grep -E $VALID_CURRENCIES > /dev/null
 
@@ -22,8 +23,10 @@ fi
 
 echo "Begin mining: $CURRENCY"
 
-cd /usr/local/bin && xmr-stak --cpu $CONFIG_DIR/cpu.txt \
-  --nvidia $CONFIG_DIR/nvidia.txt \
-  --noAMD \
-  --config $CONFIG_DIR/config.txt \
-  $@
+cd /usr/local/bin && exec xmr-stak --cpu $CONFIG_DIR/cpu.txt \
+  --noNVIDIA \
+  --amd $CONFIG_DIR/amd.txt \
+  -c $CONFIG_DIR/config.txt \
+  -C $CONFIG_DIR/pools.txt \
+  -i 10000 \
+  $@ >> $LOG
