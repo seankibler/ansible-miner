@@ -12,13 +12,7 @@
 # By default this script does nothing.
 
 if [ -x /usr/local/bin/ohgodatool ]; then
-  /usr/local/bin/ohgodatool -i 0 --show-core > /dev/null \
-    && /usr/local/bin/ohgodatool -i 0 --mem-state 2 --mem-clock 1900 \
-    && /usr/local/bin/ohgodatool -i 0 --core-state 7 --core-vddc-idx 6
-
-  /usr/local/bin/ohgodatool -i 1 --show-core > /dev/null \
-    && /usr/local/bin/ohgodatool -i 1 --mem-state 2 --mem-clock 1600 \
-    && /usr/local/bin/ohgodatool -i 1 --core-state 7 --core-vddc-idx 6
+  /usr/local/bin/ohgodatool -i 0 --mem-state 2 --mem-clock 1600
 fi
 
 exit 0
