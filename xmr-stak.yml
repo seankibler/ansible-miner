@@ -13,6 +13,13 @@
         stop: /usr/local/bin/stop-mining
         user: skibler
         group: skibler
+      - name: xmr-stak-prometheus-exporter
+        type: process_by_name
+        target: xmr-stak-prometheus-exporter
+        start: "/bin/sh -c '/usr/local/bin/xmr-stak-prometheus-exporter &'"
+        stop: /usr/bin/killall xmr-stak-prometheus-exporter
+        user: root
+        group: root
     xmr_stak_currencies:
       - monero
     xmr_stak_configs:
@@ -66,6 +73,15 @@
         group: root
         mode: 0755
         checksum: sha256:e8eb1a2fe939cabc959011f962ffe80a78ea7ebe10c29b085947b7f372731f9b
+
+    - name: Install xmrstak prometheus exporter
+      get_url:
+        url: https://github.com/seankibler/xmr-stak-prometheus-exporter/releases/download/v1.0.0/xmr-stak-prometheus-exporter
+        dest: /usr/local/bin/xmr-stak-prometheus-exporter
+        owner: root
+        group: root
+        mode: 0755
+        checksum: sha256:d64fa8bfe372256bb635060e09b1d2c78f0c961bb08a20ba50e4a508955806ad
 
   roles:
     # - seankibler.amdgpu-pro
