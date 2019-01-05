@@ -83,6 +83,20 @@
         mode: 0755
         checksum: sha256:d64fa8bfe372256bb635060e09b1d2c78f0c961bb08a20ba50e4a508955806ad
 
+    - name: Install scripts
+      copy:
+        src: files/
+        dest: /usr/local/bin/
+        mode: 0755
+        owner: root
+        group: root
+
+    - name: Fanspeed control cron
+      cron:
+        name: "fanspeed control"
+        job: "/usr/local/bin/amdfancontrol"
+        minute: "*/5"
+
   roles:
     # - seankibler.amdgpu-pro
     - xmr-stak

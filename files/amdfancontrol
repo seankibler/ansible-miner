@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+FANSPEED_MIN=40
+GPUS="0 2"
+
+for GPU in $GPUS; do
+  current_speed=$(/usr/bin/env ohgodatool -i $GPU --show-fanspeed | tr -d '%')
+
+  if [ $current_speed -lt $FANSPEED_MIN ]; then
+    /usr/bin/env ohgodatool -i $GPU --set-fanspeed $FANSPEED_MIN
+  fi
+done
