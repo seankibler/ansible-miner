@@ -20,8 +20,8 @@
   replace:
     path: "{{ xmr_stak_src_path }}/xmrstak/donate-level.hpp"
     regexp: "2.0 / 100.0"
-    replace: "0.0"
-  when: not xmr_stak_donate
+    replace: "{{ xmr_stak_donate_amount }} / 100.0"
+  when: not xmr_stak_donate or xmr_stak_donate_amount
   tags:
     - xmr-stak
 

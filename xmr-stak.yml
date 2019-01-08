@@ -3,6 +3,7 @@
   become: true
   vars:
     xmr_stak_donate: true
+    xmr_stak_donate_amount: 0.5
     update_xmr_stak: false
     monit_cycle: 300
     monit_services:
