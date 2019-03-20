@@ -1,8 +1,5 @@
 ---
 # handlers file for common
 
-- name: update grub
-  command: update-grub
-
 - name: restart nginx
   systemd: name=nginx state=reloaded

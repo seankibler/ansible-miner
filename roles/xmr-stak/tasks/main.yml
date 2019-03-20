@@ -11,7 +11,7 @@
   git:
     dest: "{{ xmr_stak_src_path }}"
     repo: https://github.com/fireice-uk/xmr-stak.git
-    update: yes
+    update: "{{ update_xmr_stak }}"
     force: yes
   tags:
     - xmr-stak
@@ -36,12 +36,27 @@
   tags:
     - xmr-stak
 
+- name: Check for install
+  shell: "xmr-stak --version"
+  register: xmr_stak_version
+  failed_when: "'error' in xmr_stak_version.stderr"
+  tags:
+    - xmr-stak
+
+- name: Check for install
+  shell: "cool --version"
+  register: cool_version
+  failed_when: "'error' in cool_version.stderr"
+  tags:
+    - xmr-stak
+
 - name: Configure
   shell: "cmake {{ xmr_stak_cmake_args }} ../ "
   args:
     creates: "{{ xmr_stak_src_path }}/build/cmake_install.cmake"
     chdir: "{{ xmr_stak_src_path }}/build"
   register: configured
+  when: update_xmr_stak or xmr_stak_version.stdout != nil
   tags:
     - xmr-stak
 
@@ -52,7 +67,7 @@
     params:
       NUM_THREADS: 4
     target: install
-  when: configured.rc == 0
+  when: (update_xmr_stak or xmr_stak_version.stdout != nil) and configured.rc == 0
   register: installed
   tags:
     - xmr-stak
@@ -75,6 +90,7 @@
     dest: /usr/local/bin
     owner: root
     group: adm
+    mode: 0755
   tags:
     - xmr-stak
 

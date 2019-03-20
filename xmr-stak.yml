@@ -3,7 +3,7 @@
   become: true
   vars:
     xmr_stak_donate: true
-    xmr_stak_donate_amount: 0.5
+    xmr_stak_donate_amount: 0.25
     update_xmr_stak: false
     monit_cycle: 300
     monit_services:
@@ -33,7 +33,7 @@
       args:
         name: skibler
         append: yes
-        groups: ["sudo", "adm"]
+        groups: ["sudo", "video", "adm"]
 
     - authorized_key:
       args:
@@ -66,23 +66,14 @@
         group: root
         remote_src: True
 
-    - name: Download ohgodatool
-      get_url:
-        url: https://github.com/OhGodACompany/OhGodATool/releases/download/1/ohgodatool
-        dest: /usr/local/bin/ohgodatool
-        owner: root
-        group: root
-        mode: 0755
-        checksum: sha256:e8eb1a2fe939cabc959011f962ffe80a78ea7ebe10c29b085947b7f372731f9b
-
-    - name: Install xmrstak prometheus exporter
-      get_url:
-        url: https://github.com/seankibler/xmr-stak-prometheus-exporter/releases/download/v1.0.0/xmr-stak-prometheus-exporter
-        dest: /usr/local/bin/xmr-stak-prometheus-exporter
-        owner: root
-        group: root
-        mode: 0755
-        checksum: sha256:d64fa8bfe372256bb635060e09b1d2c78f0c961bb08a20ba50e4a508955806ad
+    # - name: Install xmrstak prometheus exporter
+    #   get_url:
+    #     url: https://github.com/seankibler/xmr-stak-prometheus-exporter/releases/download/v1.0.0/xmr-stak-prometheus-exporter
+    #     dest: /usr/local/bin/xmr-stak-prometheus-exporter
+    #     owner: root
+    #     group: root
+    #     mode: 0755
+    #     checksum: sha256:d64fa8bfe372256bb635060e09b1d2c78f0c961bb08a20ba50e4a508955806ad
 
     - name: Install scripts
       copy:
@@ -92,13 +83,13 @@
         owner: root
         group: root
 
-    - name: Fanspeed control cron
-      cron:
-        name: "fanspeed control"
-        job: "/usr/local/bin/amdfancontrol"
-        minute: "*/5"
+    # - name: Fanspeed control cron
+    #   cron:
+    #     name: "fanspeed control"
+    #     job: "/usr/local/bin/amdfancontrol"
+    #     minute: "*/5"
 
   roles:
     # - seankibler.amdgpu-pro
     - xmr-stak
-    - pgolm.monit
+    # - pgolm.monit

@@ -9,32 +9,6 @@
     - apt
     - packages
 
-- name: GRUB terminal mode
-  replace:
-    path: /etc/default/grub
-    regexp: "^#GRUB_TERMINAL=console"
-    replace: "GRUB_TERMINAL=console"
-    backup: yes
-  notify:
-    - update grub
-
-- name: Disable lightdm startup
-  systemd:
-    enabled: no
-    name: lightdm
-
-- name: Enable multi-user
-  systemd:
-    enabled: yes
-    name: multi-user.target
-    daemon_reload: yes
-
-- name: Default multi-user
-  file:
-    state: link
-    src: /lib/systemd/system/multi-user.target
-    path: /etc/systemd/system/default.target
-
 - name: Configure sensors
   command: "sensors-detect --auto"
   args:

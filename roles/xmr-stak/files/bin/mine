@@ -23,8 +23,7 @@ fi
 
 echo "Begin mining: $CURRENCY"
 
-cd /usr/local/bin && exec xmr-stak --cpu $CONFIG_DIR/cpu.txt \
-  --noNVIDIA \
+cd /usr/local/bin && exec xmr-stak --noCPU \
   --amd $CONFIG_DIR/amd.txt \
   -c $CONFIG_DIR/config.txt \
   -C $CONFIG_DIR/pools.txt \

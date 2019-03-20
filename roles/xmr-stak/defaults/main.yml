@@ -11,3 +11,4 @@ xmr_stak_packages:
   - cmake
   - libhwloc-dev
   - git
+  - ocl-icd-opencl-dev

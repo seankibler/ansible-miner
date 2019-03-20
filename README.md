@@ -1,12 +1,15 @@
 # Ansible For Crypto Miner
 
-## What it does now
+## What it does
 
 - Installs all the modern conveniences vim tmux htop etc
-- Installs dependencies to compile xmr-stak including nvidia drivers
+- Installs dependencies to compile xmr-stak with AMD/OpenCL support
 - Installs nginx and php-fpm
-- Disable GUI startup
 - Compile and install xmr stak
 - Install miner web monitoring
 - Install xmr stak wrapper scripts
-- Install arbiter and run via cron
+
+## TODO
+
+### xmr-stak
+Install kernel 4.13.0-45
