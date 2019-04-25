@@ -1,56 +1,45 @@
 $(function() {
+  var get_metrics = function(callback) {
+    jQuery.ajax('/metrics.php', {
+      error: function() {
+        callback(false, 'Failed to get metrics');
+      },
+      success: function(data) {
+        callback(true, data);
+      },
+      timeout: 5000
+    });
+  };
 
-	var get_uptime = function() {
-		jQuery.ajax('/uptime.php', {
-			error: function() {
-				console.log('Failed to get uptime');
-				$('#uptime .card-text').html("Unable to get uptime.");
-			},
-			success: function(data) {
-				$('#uptime .card-title').html(data.uptime);
-			},
-			timeout: 5000
-		});
-	};
+  var display_metrics = function(metrics) {
+    var uptime = document.createElement('h4');
+    uptime.textContent = metrics.uptime["0"];
+    $('#uptime .card-text').html(uptime);
 
-	var get_temperatures = function() {
-		jQuery.ajax('/temperatures.php', {
-			error: function() {
-				console.log('Failed to get temperatures');
-				$('#temps .card-text').html("Unable to get temperatures.");
-			},
-			success: function(data) {
-        var tpl = _.template($('#temps-template').html());
-        $('#temps .card-text').html(tpl(data));
-			},
-			timeout: 5000
-		});
-	};
+    var temps_tpl = _.template($('#temps-template').html());
+    $('#temps .card-text').html(temps_tpl(metrics));
 
-	var get_hashrate = function() {
-		jQuery.ajax('/hashrate.php', {
-			error: function(err) {
-				console.log("Failed to get hash rate: \n" + err);
-				$('#hashrate .card-body').html("Unable to get hash rate.");
-			},
-			success: function(data) {
-        var tpl = _.template($('#hashrate-template').html());
-				$('#hashrate .card-text').html(tpl(data));
-			},
-			timeout: 5000
-		});
-	};
+    var hashrate_tpl = _.template($('#hashrate-template').html());
+    $('#hashrate .card-text').html(hashrate_tpl(metrics.hashrate));
+  };
 
-  get_stats = function() {
-    get_uptime();
-    get_temperatures();
-    get_hashrate();
+  var display_error = function() {
+    $('.card-text').html("Unable to get uptime.");
+  };
+
+  show_stats = function() {
+    get_metrics(function(success, metrics) {
+      if (success) {
+        display_metrics(metrics);
+      } else {
+        display_error();
+      }
+    });
 
     setTimeout(function() {
-      get_stats();
+      show_stats();
     }, 5000);
   };
 
-  get_stats();
+  show_stats();
 });
-

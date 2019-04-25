@@ -10,30 +10,33 @@
 <h1>Miner Status</h1>
 
 <div class="card-group">
-<div id="uptime" class="card text-white bg-secondary" style="width: 18rem;">
-<div class="card-body">
-<h5 class="card-title">Uptime </h5>
-</div>
-<p class="card-text"></p>
-</div>
 
 <div id="hashrate" class="card text-white bg-secondary" style="width: 18rem;">
 <div class="card-body">
-<h5 class="card-title">Current Hash Rate </h5>
+<h3 class="card-title">Hashrate </h3>
 </div>
 <p class="card-text"></p>
 </div>
 
 <div id="temps" class="card text-white bg-secondary" style="width: 18rem;">
 <div class="card-body">
-<h5 class="card-title">Temperatures</h5>
+<h3 class="card-title">Temperatures</h3>
 </div>
 <p class="card-text">
 </p>
 </div>
+
+<div id="uptime" class="card text-white bg-secondary" style="width: 18rem;">
+<div class="card-body">
+<h3 class="card-title">Uptime </h3>
+</div>
+<p class="card-text"></p>
+</div>
+
 </div>
 
 <script id="hashrate-template" type="x-underscore-template">
+  <h4>Total: <%= hashrate.total[0] %></h4>
   <table class="table table-sm">
 	  <tr>
 		  <th>Thread</th>
@@ -45,28 +48,30 @@
         <td><%= thread[0] %></td>
       </tr>
     <% }) %>
-    <tr>
-      <td>Total</td>
-      <td><%= hashrate.total[0] %></td>
-    </tr>
 </script>
 
 <script id="temps-template" type="x-underscore-template">
   <table class="table table-sm">
+    <tr>
+    <td><h4>Avg GPU: <%= _.reduce(gpu.temps, (memo, num) => memo + parseFloat(num), 0) / _.size(gpu.temps) %> &deg;C</h4></td>
+    <td><h4>Avg CPU: <%= _.reduce(cpu.temps, (memo, num) => memo + parseFloat(num), 0) / _.size(cpu.temps) %> &deg;C</h4></td>
+    </tr>
+  </table>
+  <table class="table table-sm">
 	  <tr>
 		  <th>Core #</th>
-		  <th>Temp (C)</th>
+		  <th>Temp</th>
 	  </tr>
-    <% _.each(cpu.cores, function(val, key) { %>
+    <% _.each(cpu.temps, function(val, key) { %>
       <tr>
         <td>CPU Core <%= key %></td>
-        <td><%= val %> C</td>
+        <td><%= val %> &deg;C</td>
       </tr>
     <% }) %>
-    <% _.each(gpu, function(val, key) { %>
+    <% _.each(gpu.temps, function(val, key) { %>
       <tr>
         <td>GPU <%= key %></td>
-        <td><%= val %> C</td>
+        <td><%= val %> &deg;C</td>
       </tr>
     <% }) %>
   </table>
