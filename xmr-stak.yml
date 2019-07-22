@@ -2,25 +2,25 @@
 - hosts: miners
   become: true
   vars:
-    xmr_stak_donate: true
-    xmr_stak_donate_amount: 0.25
-    update_xmr_stak: false
-    monit_cycle: 300
-    monit_services:
-      - name: xmr-stak
-        type: process_by_name
-        target: xmr-stak
-        start: /usr/local/bin/start-mining monero
-        stop: /usr/local/bin/stop-mining
-        user: skibler
-        group: skibler
-      - name: xmr-stak-prometheus-exporter
-        type: process_by_name
-        target: xmr-stak-prometheus-exporter
-        start: "/bin/sh -c '/usr/local/bin/xmr-stak-prometheus-exporter &'"
-        stop: /usr/bin/killall xmr-stak-prometheus-exporter
-        user: root
-        group: root
+    xmr_stak_donate: false
+    xmr_stak_donate_amount: "0.0"
+    update_xmr_stak: true
+    # monit_cycle: 300
+    # monit_services:
+    #   - name: xmr-stak
+    #     type: process_by_name
+    #     target: xmr-stak
+    #     start: /usr/local/bin/start-mining monero
+    #     stop: /usr/local/bin/stop-mining
+    #     user: skibler
+    #     group: skibler
+    #   - name: xmr-stak-prometheus-exporter
+    #     type: process_by_name
+    #     target: xmr-stak-prometheus-exporter
+    #     start: "/bin/sh -c '/usr/local/bin/xmr-stak-prometheus-exporter &'"
+    #     stop: /usr/bin/killall xmr-stak-prometheus-exporter
+    #     user: root
+    #     group: root
     xmr_stak_currencies:
       - monero
     xmr_stak_configs:
@@ -83,11 +83,16 @@
         owner: root
         group: root
 
-    # - name: Fanspeed control cron
-    #   cron:
-    #     name: "fanspeed control"
-    #     job: "/usr/local/bin/amdfancontrol"
-    #     minute: "*/5"
+    - name: Check miner cron
+      cron:
+        name: "check miner"
+        job: "/usr/bin/env python /usr/local/bin/check-miner.py"
+        minute: "*/2"
+
+    - name: Fanspeed control cron
+      cron:
+        name: "fanspeed control"
+        job: "/usr/local/bin/amdfancontrol"
 
   roles:
     # - seankibler.amdgpu-pro
