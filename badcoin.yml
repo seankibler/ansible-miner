@@ -1,0 +1,43 @@
+- hosts: all
+  become: true
+  vars:
+    badcoin_wallet_version: 0.16.3-2
+    badcoin_wallet_sha256: 9ae60e47279aef926095409743869cf6e671f5b67672fb4ffefd73292661f221
+    miner_repo: https://github.com/tpruvot/cpuminer-multi.git
+    miner_src_path: /usr/local/src/cpuminer-multi
+    miner_build_dependencies:
+      - automake
+      - autoconf
+      - libjansson-dev
+      - pkg-config
+      - libcurl4-openssl-dev
+      - libssl-dev
+      - libgmp-dev
+      - make
+      - g++
+  tasks:
+    - package:
+        name: "{{ item }}"
+      with_items: "{{ miner_build_dependencies }}"
+
+    - git:
+        repo: "{{ miner_repo }}"
+        dest: "{{ miner_src_path }}"
+
+    - shell: ./build.sh
+      args:
+        chdir: "{{ miner_src_path }}"
+
+    - get_url:
+        url: "https://github.com/ScriptProdigy/Badcoin/releases/download/v{{ badcoin_wallet_version }}/Badcoin-x86_64-unknown-linux-gnu.zip"
+        dest: "/tmp/badcoin-wallet-{{ badcoin_wallet_version }}.zip"
+        mode: 0755
+        checksum: "sha256:{{ badcoin_wallet_sha256 }}"
+
+    - unarchive:
+        src: "/tmp/badcoin-wallet-{{ badcoin_wallet_version }}.zip"
+        dest: "/usr/local/bin"
+        remote_src: true
+        creates: "/usr/local/bin/badcoin-cli"
+        extra_opts:
+          - -j
