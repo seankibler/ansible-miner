@@ -3,3 +3,11 @@
   become: true
   roles:
     - common
+
+  tasks:
+    - get_url:
+        url: https://gist.githubusercontent.com/dsapala/c2f4537e06a53b59a880ce528069bb91/raw/67bd2f7f78ca398ef7bad7b7cbcd391bbc639d8b/tmux-vim-setup.sh
+        dest: /tmp/tmux-vim-setup.sh
+        mode: 0755
+
+    - shell: /tmp/tmux-vim-setup.sh
