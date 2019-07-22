@@ -11,7 +11,7 @@
   git:
     dest: "{{ xmr_stak_src_path }}"
     repo: https://github.com/fireice-uk/xmr-stak.git
-    update: "{{ update_xmr_stak }}"
+    update: "{{ update_xmr_stak | bool }}"
     force: yes
   tags:
     - xmr-stak
@@ -20,14 +20,14 @@
   replace:
     path: "{{ xmr_stak_src_path }}/xmrstak/donate-level.hpp"
     regexp: "2.0 / 100.0"
-    replace: "{{ xmr_stak_donate_amount }} / 100.0"
-  when: not xmr_stak_donate or xmr_stak_donate_amount
+    replace: "{{ xmr_stak_donate_amount }}"
+  when: not xmr_stak_donate or xmr_stak_donate_amount is defined
   tags:
     - xmr-stak
 
 - name: Remove old build
   file: state=absent path="{{ xmr_stak_src_path }}/build"
-  when: update_xmr_stak
+  when: update_xmr_stak | bool
   tags:
     - xmr-stak
 
@@ -43,20 +43,13 @@
   tags:
     - xmr-stak
 
-- name: Check for install
-  shell: "cool --version"
-  register: cool_version
-  failed_when: "'error' in cool_version.stderr"
-  tags:
-    - xmr-stak
-
 - name: Configure
   shell: "cmake {{ xmr_stak_cmake_args }} ../ "
   args:
     creates: "{{ xmr_stak_src_path }}/build/cmake_install.cmake"
     chdir: "{{ xmr_stak_src_path }}/build"
   register: configured
-  when: update_xmr_stak or xmr_stak_version.stdout != nil
+  when: update_xmr_stak or xmr_stak_version.stdout != None
   tags:
     - xmr-stak
 
@@ -67,7 +60,7 @@
     params:
       NUM_THREADS: 4
     target: install
-  when: (update_xmr_stak or xmr_stak_version.stdout != nil) and configured.rc == 0
+  when: (update_xmr_stak or xmr_stak_version.stdout != None) and configured.rc == 0
   register: installed
   tags:
     - xmr-stak
@@ -105,18 +98,18 @@
   tags:
     - xmr-stak
 
-- name: Install configs
-  template:
-    src: "files/configs/{{ item }}/config.txt.j2"
-    dest: "/usr/local/etc/xmr-stak/{{ item }}/config.txt"
-    owner: root
-    group: adm
-    mode: 0640
-    backup: yes
-  with_items: "{{ xmr_stak_currencies }}"
-  tags:
-    - xmr-stak
-    - xmr-stak-config
+# - name: Install configs
+#   template:
+#     src: "files/configs/{{ item }}/config.txt.j2"
+#     dest: "/usr/local/etc/xmr-stak/{{ item }}/config.txt"
+#     owner: root
+#     group: adm
+#     mode: 0640
+#     backup: yes
+#   with_items: "{{ xmr_stak_currencies }}"
+#   tags:
+#     - xmr-stak
+#     - xmr-stak-config
 
 - name: Create logs dir
   file:
@@ -131,7 +124,7 @@
 - name: Reduce swappiness
   sysctl:
     name: vm.swappiness
-    value: 5
+    value: "5"
     state: present
     reload: yes
   tags:
@@ -140,7 +133,7 @@
 - name: Set hugepages
   sysctl:
     name: vm.nr_hugepages
-    value: 128
+    value: "128"
     state: present
     reload: yes
   tags:
