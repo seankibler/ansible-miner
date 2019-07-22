@@ -12,3 +12,4 @@ xmr_stak_packages:
   - libhwloc-dev
   - git
   - ocl-icd-opencl-dev
+xmr_stak_donate_amount: "2.0 / 100.0"
