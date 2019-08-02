@@ -29,3 +29,8 @@ ohgodatool -i 4 --set-fanspeed $FANSPEED
 ohgodatool -i 4 --core-state 7 --core-vddc-idx $CORE_V_IDX \
   && ohgodatool -i 4 --core-state 7 --core-clock $CORE_OC \
   && ohgodatool -i 4 --mem-state 2 --mem-clock $MEM_OC
+
+ohgodatool -i 5 --set-fanspeed $FANSPEED
+ohgodatool -i 5 --core-state 7 --core-vddc-idx $CORE_V_IDX \
+  && ohgodatool -i 5 --core-state 7 --core-clock $CORE_OC \
+  && ohgodatool -i 5 --mem-state 2 --mem-clock $MEM_OC

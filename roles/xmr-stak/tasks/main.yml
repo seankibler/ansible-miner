@@ -85,6 +85,7 @@
     group: adm
     mode: 0755
   tags:
+    - scripts
     - xmr-stak
 
 - name: Create config dirs
