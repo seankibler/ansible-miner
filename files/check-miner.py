@@ -14,7 +14,7 @@ try:
 	if hashrate != None:
 		hashrate = float(hashrate[0])
 
-	if hashrate >= 2.4:
+	if hashrate >= 2.0:
 		statuscake_response = requests.get(statuscake_push_url)
 except URLError as e:
 	if hasattr(e, 'reason'):
