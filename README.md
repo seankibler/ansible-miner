@@ -6,10 +6,8 @@
 - Installs dependencies to compile xmr-stak with AMD/OpenCL support
 - Installs nginx and php-fpm
 - Compile and install xmr stak
-- Install miner web monitoring
-- Install xmr stak wrapper scripts
-
-## TODO
+- Installs status web page
+- Installs miner control scripts
 
 ### xmr-stak
 Install kernel 4.13.0-45
