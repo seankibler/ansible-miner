@@ -1,0 +1,74 @@
+#! /usr/bin/env bash
+
+set -o pipefail
+
+LOCKFILE=/var/lock/miner-check.lock
+LOGFILE=/var/log/miner-check.log
+UP_STATUS="Up"
+STATUS_URL='https://app.statuscake.com/API/Tests/?TestID=4022995'
+API_KEY=${STATUSCAKE_API_KEY}
+API_USER=${STATUSCAKE_API_USER}
+MINER_HOST='skibler@192.168.1.145'
+MAX_SSH_ATTEMPTS=120
+SSH_DELAY=5
+SSH_INITIAL_DELAY=20
+
+function log() {
+	printf "%s - %s\n" "$(date)" "$1" >> ${LOGFILE}
+}
+
+function clear_lock() {
+	rm -f $LOCKFILE
+}
+
+trap clear_lock EXIT
+
+if [ -f ${LOCKFILE} ]; then
+	log "Lockfile exists, exiting."
+	exit 1
+fi
+
+echo $$ > ${LOCKFILE}
+
+data=$(curl -Ls --retry 3 -H "API: ${API_KEY}" -H "Username: ${API_USER}" "${STATUS_URL}")
+err=$(echo $data | jq -r '.ErrNo')
+
+if [ $err -eq 0 ]; then
+	log "statuscake auth error"
+	exit 1
+fi
+
+status=$(echo $data | jq -r '.[2].Status')
+
+function restart_host() {
+	log "restarting $1"
+	ssh $1 -- sudo shutdown -r now && true
+}
+
+function try_ssh() {
+	log "trying host $1"
+	ssh $1 echo && true
+}
+
+function start_mining() {
+	log "start mining"
+	ssh $1 -- sudo sh -c 'gpu-overclock && minerctl start monero'
+}
+
+if [ "$status" != "$UP_STATUS" ]; then
+	restart_host $MINER_HOST
+	sleep $SSH_INITIAL_DELAY
+	attempts=0
+
+	try_ssh $MINER_HOST
+	while [ $? -ne 0 -a $attempts -le $MAX_SSH_ATTEMPTS ]; do
+		sleep $SSH_DELAY
+		log "Attempt $attempts"
+		attempts=$((attempts+1))
+		try_ssh $MINER_HOST
+	done
+
+	start_mining $MINER_HOST
+fi
+
+clear_lock

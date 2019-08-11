@@ -1,0 +1,31 @@
+- hosts: watchdogs
+  tasks:
+    - name: Install watchdog script dependencies
+      package:
+        name: '{{ item }}'
+      with_items:
+        - jq
+        - curl
+
+    - name: Install miner watchdog script
+      copy:
+        dest: /usr/local/bin/miner-watchdog
+        src: files/miner-watchdog
+        mode: 0755
+      become: true
+
+    - name: Set watchdog cron env vars
+      cronvar:
+        name: '{{ item.name }}'
+        value: '{{ item.value }}'
+      with_items:
+        - name: STATUSCAKE_API_USER
+          value: statuscake_api_user
+        - name: STATUSCAKE_API_KEY
+          value: statuscake_api_key
+
+    - name: Install miner watchdog cron
+      cron:
+        name: miner watchdog
+        job: /usr/local/bin/miner-watchdog
+        minute: '*/5'
