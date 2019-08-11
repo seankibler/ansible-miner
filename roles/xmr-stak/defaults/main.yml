@@ -1,7 +1,7 @@
 ---
 xmr_stak_src_path: /usr/local/src/xmr-stak
 xmr_stak_cmake_args: "-DCUDA_ENABLE=OFF -DCMAKE_INSTALL_PREFIX=/usr/local/"
-xmr_stak_currencies:
+xmr_stak_coins:
   - monero
 xmr_stak_log_path: /var/log/xmr-stak
 xmr_stak_packages:
@@ -13,3 +13,4 @@ xmr_stak_packages:
   - git
   - ocl-icd-opencl-dev
 xmr_stak_donate_amount: "2.0 / 100.0"
+default_coin: monero

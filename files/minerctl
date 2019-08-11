@@ -1,0 +1,31 @@
+#! /bin/bash
+
+if [ $# -lt 1 ]; then
+  echo "Usage: $0 (start|stop) <coin>" 1>&2
+  exit 1
+fi
+
+MINERCTL=teamredctl
+ACTION=$1
+
+case $ACTION in
+  start)
+    if [ $# -eq 1 ]; then
+      echo "Crypto currency required." 2>&1
+      exit 1
+    fi
+
+    shift
+
+    exec $MINERCTL start $@ > /dev/null &
+    ;;
+  stop)
+    exec $MINERCTL stop
+    ;;
+  *)
+    echo "Invalid action." >2
+    exit 1
+    ;;
+esac
+
+exit 0

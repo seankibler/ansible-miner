@@ -53,7 +53,7 @@
 #ftp             -       chroot          /ftp
 #@student        -       maxlogins       4
 
-skibler         soft     memlock         262144
-skibler         hard     memlock         262144
+{{ ansible_user_id }}         soft     memlock         262144
+{{ ansible_user_id }}         hard     memlock         262144
 
 # End of file

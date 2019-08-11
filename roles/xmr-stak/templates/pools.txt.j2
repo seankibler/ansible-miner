@@ -1,0 +1,14 @@
+"pool_list" :
+[
+  {
+    "pool_address" : "{{ xmr_stak_configs[item].pool }}",
+    "wallet_address" : "{{ xmr_stak_configs[item].wallet }}",
+    "rig_id" : "",
+    "pool_password" : "{{ xmr_stak_configs[item].password }}",
+    "use_nicehash" : false,
+    "use_tls" : false,
+    "tls_fingerprint" : "",
+    "pool_weight" : 1
+  },
+],
+"currency" : "{{ item }}",

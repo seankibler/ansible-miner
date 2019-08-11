@@ -1,16 +1,18 @@
 #!/usr/bin/env bash
 
-FANSPEED_MIN=45
-GPUS="0 1 2 3 4"
+set -o pipefail
 
-for GPU in $GPUS; do
-  current_speed=$(/usr/bin/env ohgodatool -i $GPU --show-fanspeed | tr -d '%')
+FANSPEED_MIN=40
+NGPUS=$(lspci | grep '{{ gpu_model }}' | wc -l)
+
+for GPU in $(seq 0 $(($NGPUS-1))); do
+  current_speed=$(/usr/local/bin/ohgodatool -i $GPU --show-fanspeed | tr -d '%')
 
   if [ $? -ne 0 ]; then
     continue
   fi
 
   if [ $current_speed -lt $FANSPEED_MIN ]; then
-    /usr/bin/env ohgodatool -i $GPU --set-fanspeed $FANSPEED_MIN
+    /usr/local/bin/ohgodatool -i $GPU --set-fanspeed $FANSPEED_MIN
   fi
 done

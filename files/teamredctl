@@ -1,0 +1,68 @@
+#! /bin/bash
+
+set -uo pipefail
+
+if [ $# -lt 1 ]; then
+  echo <<EOUSAGE
+$0 start <coin>
+$0 stop
+EOUSAGE
+  exit 1
+fi
+
+ACTION=$1
+
+function start_miner() {
+  COIN=$1
+  CONF=/usr/local/etc/teamredminer/${COIN}.json
+  LOG=/var/log/teamredminer/${COIN}.log
+
+  if [ ! -f $CONF ]; then
+    echo "Missing config file for coin $CONF"
+    exit 1
+  fi
+
+  URL=$(cat $CONF | jq -r '.url')
+  USER=$(cat $CONF | jq -r '.user')
+  CNCNF=$(cat $CONF | jq -r '.cn_config')
+
+  ps -C teamredminer > /dev/null
+
+  if [ $? -ne 0 ]; then
+    echo "Begin mining: \"$COIN\""
+
+    if [ -z "$CNCNF" ]; then
+      teamredminer -a cnr -o $URL -u $USER --log_file $LOG
+    else
+      teamredminer -a cnr -o $URL -u $USER --log_file $LOG --cn_config="$CNCNF"
+    fi
+  else
+    echo "Miner already running." 1>&2
+    exit 1
+  fi
+}
+
+function stop_miner() {
+  echo "Stop mining..."
+  ps aux | grep teamredminer | grep -v grep > /dev/null
+
+  if [ $? -eq 0 ]; then
+    killall teamredminer
+    exit 0
+  else
+    echo "Miner is not running..." 1>&2
+    exit 1
+  fi
+}
+
+case $ACTION in
+  start)
+    start_miner $2
+    ;;
+  stop)
+    stop_miner
+    ;;
+  *)
+    echo "Invalid action \"$ACTION\"" 1>&2 ;;
+esac
+

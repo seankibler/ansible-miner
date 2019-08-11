@@ -1,0 +1,14 @@
+#! /usr/bin/env bash
+
+CORE_CLOCK=1300
+CORE_V_IDX=5
+FANSPEED="{{ gpu_fanspeed }}"
+NGPUS=$(lspci | grep '{{ gpu_model }}' | wc -l)
+
+for gpu in $(seq 0 $(($NGPUS-1))); do
+
+  ohgodatool -i $gpu --set-fanspeed $FANSPEED
+  ohgodatool -i $gpu --core-state 7 --core-vddc-idx $CORE_V_IDX \
+    && ohgodatool -i $gpu --core-state 7 --core-clock $CORE_CLOCK
+
+done

@@ -5,6 +5,11 @@
     xmr_stak_donate: false
     xmr_stak_donate_amount: "0.0"
     update_xmr_stak: true
+    gpu_model: 'RX 550'
+    gpu_core_clock: 1200
+    gpu_mem_clock: 1875
+    gpu_vdc_idx: 5
+    gpu_fanspeed: 40
     # monit_cycle: 300
     # monit_services:
     #   - name: xmr-stak
@@ -21,13 +26,20 @@
     #     stop: /usr/bin/killall xmr-stak-prometheus-exporter
     #     user: root
     #     group: root
-    xmr_stak_currencies:
+    xmr_stak_coins:
       - monero
     xmr_stak_configs:
       monero:
         pool: "{{ xmrstak_vault.monero.pool }}"
         wallet: "{{ xmrstak_vault.monero.wallet }}"
         password: "{{ xmrstak_vault.monero.password }}"
+    trm_coins:
+      - monero
+    trm_configs:
+      monero:
+        pool_url: "stratum+tcp://{{ xmrstak_vault.monero.pool }}"
+        wallet: "{{ xmrstak_vault.monero.wallet }}"
+        cn_config: 'L4+3:AAA,3+3:AAA,3+3:AAA,4+4:AAA,L4+3:AAA,4+4:AAA,3+3:AAA'
   tasks:
     - user:
       args:
@@ -51,10 +63,12 @@
         repo: https://github.com/ystarnaud/amdmeminfo
         dest: /usr/local/src/amdmeminfo
         update: no
+      tags: ['scripts']
 
     - name: Compile amdmeminfo
       make:
         chdir: /usr/local/src/amdmeminfo
+      tags: ['scripts']
 
     - name: Install amdmeminfo
       copy:
@@ -65,6 +79,7 @@
         owner: root
         group: root
         remote_src: True
+      tags: ['scripts']
 
     # - name: Install xmrstak prometheus exporter
     #   get_url:
@@ -76,25 +91,68 @@
     #     checksum: sha256:d64fa8bfe372256bb635060e09b1d2c78f0c961bb08a20ba50e4a508955806ad
 
     - name: Install scripts
+      template:
+        src: "templates/{{ item }}.j2"
+        dest: "/usr/local/bin/{{ item }}"
+        owner: root
+        group: adm
+        mode: 0755
+      with_items:
+        - gpu-overclock
+        - gpu-coreoverclock
+        - gpu-lowpower
+      tags: ['scripts']
+
+    - name: Install scripts
       copy:
         src: files/
         dest: /usr/local/bin/
         mode: 0755
         owner: root
         group: root
+      tags: ['scripts']
+
+    - name: Install required packages
+      package:
+        name: "{{ item }}"
+      with_items:
+        - jq
+        - python-requests
+      tags: ['packages', 'trm']
+
+    - name: Make teamredminer directories
+      file:
+        path: '{{ item }}'
+        state: directory
+        group: adm
+        mode: '2775'
+      with_items:
+        - /usr/local/etc/teamredminer
+        - /var/log/teamredminer
+      tags: ['trm']
+
+    - name: Install teamredminer configs
+      template:
+        src: templates/teamredminer.json.j2
+        dest: "/usr/local/etc/teamredminer/{{ item }}.json"
+      with_items: "{{ trm_coins }}"
+      tags: ['trm']
 
     - name: Check miner cron
       cron:
         name: "check miner"
         job: "/usr/bin/env python /usr/local/bin/check-miner.py"
         minute: "*/2"
+      tags: ['cron']
 
     - name: Fanspeed control cron
       cron:
         name: "fanspeed control"
         job: "/usr/local/bin/amdfancontrol"
+      tags: ['cron']
 
   roles:
     # - seankibler.amdgpu-pro
     - xmr-stak
+    - { role: kibbs.teamredminer, tags: ['trm'] }
     # - pgolm.monit
