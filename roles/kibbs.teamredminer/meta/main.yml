@@ -1,0 +1,10 @@
+galaxy_info:
+  author: Sean Kibler
+  description: Ansible role for teamredminer
+  license: WTFPL (http://www.wtfpl.net/)
+
+  min_ansible_version: 2.4
+
+  galaxy_tags: ["crytpocurrency", "miner"]
+
+dependencies: []

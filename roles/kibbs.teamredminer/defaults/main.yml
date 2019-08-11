@@ -1,0 +1,5 @@
+---
+trm_bin_path: /usr/local/bin
+trm_release_path: /opt
+trm_version: 0.5.7
+trm_release_url: https://github.com/todxx/teamredminer/releases/download/{{ trm_version }}/teamredminer-v{{ trm_version }}-linux.tgz

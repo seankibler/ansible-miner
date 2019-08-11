@@ -1,0 +1,25 @@
+---
+
+- name: Download teamredminer release
+  get_url:
+    url: "{{ trm_release_url }}"
+    dest: "{{ trm_release_path }}/teamredminer-{{ trm_version }}.tar.gz"
+
+- name: Make release directory
+  file:
+    path: "{{ trm_release_path }}/teamredminer-{{ trm_version }}"
+    state: directory
+
+- name: Unpack teamredminer release
+  unarchive:
+    src: "{{ trm_release_path }}/teamredminer-{{ trm_version }}.tar.gz"
+    dest: "{{ trm_release_path }}/teamredminer-{{ trm_version }}"
+    extra_opts: ['--strip-components',  '1']
+    remote_src: true
+
+- name: Install teamredminer
+  copy:
+    src: "{{ trm_release_path }}/teamredminer-{{ trm_version }}/teamredminer"
+    dest: "{{ trm_bin_path }}/teamredminer"
+    mode: 0755
+    remote_src: true
