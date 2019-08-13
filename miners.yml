@@ -101,6 +101,7 @@
         - gpu-overclock
         - gpu-coreoverclock
         - gpu-lowpower
+        - amdfancontrol
       tags: ['scripts']
 
     - name: Install scripts
