@@ -2,7 +2,7 @@
 
 set -o pipefail
 
-FANSPEED_MIN=40
+FANSPEED_MIN={{ gpu_min_fanspeed | default(40) }}
 NGPUS=$(lspci | grep '{{ gpu_model }}' | wc -l)
 
 for GPU in $(seq 0 $(($NGPUS-1))); do

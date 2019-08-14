@@ -9,7 +9,7 @@
     gpu_core_clock: 1200
     gpu_mem_clock: 1875
     gpu_vdc_idx: 5
-    gpu_fanspeed: 40
+    gpu_fanspeed: 60
     # monit_cycle: 300
     # monit_services:
     #   - name: xmr-stak
