@@ -1,5 +1,12 @@
-[miners]
+[amd-miners]
 miner
+
+[cpu-miners]
+griswold
+
+[miners:children]
+cpu-miners
+amd-miners
 
 [watchdogs]
 pi3

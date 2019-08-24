@@ -1,5 +1,5 @@
 ---
-- hosts: miners
+- hosts: amd-miners
   become: true
   vars:
     xmr_stak_donate: false
@@ -153,6 +153,7 @@
       tags: ['cron']
 
   roles:
+    - common
     # - seankibler.amdgpu-pro
     - xmr-stak
     - { role: kibbs.teamredminer, tags: ['trm'] }

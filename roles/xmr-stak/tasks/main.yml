@@ -1,5 +1,9 @@
 ---
 
+- set_fact:
+    xmr_stak_cmake_args: "{{ xmr_stak_cmake_default_args }} -DOPENCL_ENABLED=OFF"
+  when: not xmr_stak_amd_enabled
+
 - name: Install dependencies
   apt:
     name: "{{ xmr_stak_packages }}"
@@ -122,6 +126,7 @@
     mode: 0640
     backup: yes
   with_items: "{{ xmr_stak_coins }}"
+  when: xmr_stak_amd_enabled
   tags:
     - xmr-stak
     - config
