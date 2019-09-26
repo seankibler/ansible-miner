@@ -1,0 +1,17 @@
+- hosts: cpu-miners
+  become: true
+  vars:
+    xmrig_version: '4.0.1'
+    os_release: xenial
+  tasks:
+    - get_url:
+        url: 'https://github.com/xmrig/xmrig/releases/download/v{{ xmrig_version }}-beta/xmrig-{{ xmrig_version }}-beta-{{ os_release }}-x64.tar.gz'
+        dest: '/usr/local/src/xmrig-{{ xmrig_version }}.tar.gz'
+
+    - file:
+        state: directory
+        path: '/usr/local/src/xmrig-{{ xmrig_version }}'
+
+    - unarchive:
+        src: '/usr/local/src/xmrig-{{ xmrig_version }}.tar.gz'
+        dest: '/usr/local/src/xmrig-{{ xmrig_version }}'
